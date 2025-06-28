@@ -45,6 +45,12 @@ public class User {
   private Integer currentLevel = 1;
 
   @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<MentorMenteeLink> mentorLinks = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<MentorMenteeLink> menteeLinks = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Resource> resources = new ArrayList<>();
 
   @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

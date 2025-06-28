@@ -5,15 +5,15 @@ CREATE TABLE users (
     role VARCHAR(20) NOT NULL,
     total_xp INT NOT NULL DEFAULT 0,
     current_level INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE mentor_mentee_link (
     id UUID PRIMARY KEY,
     mentor_id UUID NOT NULL,
     mentee_id UUID NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
     CONSTRAINT fk_mentor FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -31,8 +31,8 @@ CREATE TABLE resources (
     external_url VARCHAR(255) NOT NULL,
     in_bank BOOLEAN NOT NULL DEFAULT FALSE,
     mentor_id UUID NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
 
     CONSTRAINT fk_resource_mentor FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -43,13 +43,13 @@ CREATE TABLE problems (
     id UUID PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
-    difficulty VARCHAR(20) NOT NULL CHECK (difficulty IN ('EASY', 'MEDIUM', 'HARD')),
+    difficulty VARCHAR(20) NOT NULL,
     external_url VARCHAR(255) NOT NULL,
     mentor_id UUID NOT NULL,
     in_bank BOOLEAN NOT NULL,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
 
     CONSTRAINT fk_problem_mentor FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -61,12 +61,12 @@ CREATE TABLE assignments (
     id UUID PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
-    status VARCHAR(20) CHECK (status IN ('PENDING', 'SUBMITTED', 'COMPLETED')),
+    status VARCHAR(20) NOT NULL,
     xp_reward INTEGER NOT NULL DEFAULT 0,
     mentor_id UUID NOT NULL,
     mentee_id UUID NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
 
     CONSTRAINT fk_assignment_mentor FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_assignment_mentee FOREIGN KEY (mentee_id) REFERENCES users(id) ON DELETE CASCADE
@@ -83,8 +83,8 @@ CREATE TABLE submissions (
     problem_id UUID NOT NULL,
     content TEXT NOT NULL,
     feedback TEXT, -- Feedback provided by the mentor
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
 
     CONSTRAINT fk_submission_assignment FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE,
     CONSTRAINT fk_submission_mentee FOREIGN KEY (mentee_id) REFERENCES users(id) ON DELETE CASCADE,

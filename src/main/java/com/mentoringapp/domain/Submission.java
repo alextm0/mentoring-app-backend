@@ -6,47 +6,54 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "mentor_mentee_link",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"mentor_id", "mentee_id"}),
-                @UniqueConstraint(columnNames = {"mentee_id"})
-        }
-)
-@Getter
+@Table(name = "submissions")
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MentorMenteeLink {
+public class Submission {
   @Id
   @Column(name = "id", nullable = false, updatable = false)
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "mentor_id", nullable = false)
-  private User mentor;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "mentee_id", nullable = false, unique = true)
+  @JoinColumn(name = "mentee_id", nullable = false)
   private User mentee;
 
-  @Column(name = "is_active", nullable = false)
-  private Boolean isActive = true;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "assignment_id", nullable = false)
+  private Assignment assignment;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "problem_id", nullable = false)
+  private Problem problem;
+
+  @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+  private String content;
+
+  @Column(name = "feedback", columnDefinition = "TEXT")
+  private String feedback;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
+  @LastModifiedDate
+  @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt;
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
-    MentorMenteeLink that = (MentorMenteeLink) o;
+    Submission that = (Submission) o;
     return Objects.equals(id, that.id);
   }
 

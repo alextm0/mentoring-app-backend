@@ -12,6 +12,9 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -36,10 +39,25 @@ public class User {
   private String role;
 
   @Column(name = "total_xp", nullable = false)
-  private Integer totalXp;
+  private Integer totalXp = 0;
 
   @Column(name = "current_level", nullable = false)
-  private Integer currentLevel;
+  private Integer currentLevel = 1;
+
+  @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Resource> resources = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Problem> problems = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Assignment> mentorAssignments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Assignment> menteeAssignments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Submission> submissions = new ArrayList<>();
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
@@ -49,5 +67,15 @@ public class User {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    User user = (User) o;
+    return Objects.equals(id, user.id);
+  }
 
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
+  }
 }

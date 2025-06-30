@@ -1,6 +1,6 @@
 package com.mentoringapp.exceptions;
 
-public class MentorshipNotFoundException extends UserException {
+public class MentorshipNotFoundException extends MentorshipException {
   public MentorshipNotFoundException(String message) {
     super(message);
   }

@@ -44,6 +44,9 @@ public class Problem {
   private User mentor;
 
   @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AssignmentProblemLink> assignmentLinks = new ArrayList<>();
+
+  @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Submission> submissions = new ArrayList<>();
 
   @Column(name = "in_bank", nullable = false)

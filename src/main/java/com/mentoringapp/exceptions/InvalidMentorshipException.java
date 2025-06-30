@@ -1,6 +1,6 @@
 package com.mentoringapp.exceptions;
 
-public class InvalidMentorshipException extends UserException {
+public class InvalidMentorshipException extends MentorshipException {
   public InvalidMentorshipException(String message) {
     super(message);
   }

@@ -1,4 +1,4 @@
-package com.mentoringapp.dto.response;
+package com.mentoringapp.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateLinkResponseDTO {
-  private String message;
-}
+public class CreateMentorshipRequestDTO {
+  private String email;
+} 

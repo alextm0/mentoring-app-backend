@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "mentor_mentee_link",
+@Table(name = "mentorships",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"mentor_id", "mentee_id"}),
                 @UniqueConstraint(columnNames = {"mentee_id"})
@@ -24,7 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class MentorMenteeLink {
+public class Mentorship {
   @Id
   @Column(name = "id", nullable = false, updatable = false)
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,7 +48,7 @@ public class MentorMenteeLink {
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
-    MentorMenteeLink that = (MentorMenteeLink) o;
+    Mentorship that = (Mentorship) o;
     return Objects.equals(id, that.id);
   }
 
@@ -56,4 +56,4 @@ public class MentorMenteeLink {
   public int hashCode() {
     return Objects.hashCode(id);
   }
-}
+} 

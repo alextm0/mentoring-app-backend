@@ -1,11 +1,11 @@
 package com.mentoringapp.service.impl;
 
-import com.mentoringapp.domain.MentorMenteeLink;
+import com.mentoringapp.domain.Mentorship;
 import com.mentoringapp.domain.User;
-import com.mentoringapp.exceptions.LinkNotFoundException;
+import com.mentoringapp.exceptions.MentorshipNotFoundException;
 import com.mentoringapp.exceptions.UserException;
 import com.mentoringapp.exceptions.UserNotFoundException;
-import com.mentoringapp.repository.MentorMenteeLinkRepository;
+import com.mentoringapp.repository.MentorshipRepository;
 import com.mentoringapp.repository.UserRepository;
 import com.mentoringapp.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
-  private final MentorMenteeLinkRepository mentorMenteeLinkRepository;
+  private final MentorshipRepository mentorshipRepository;
+
+  @Override
+  public List<User> getUsersByRole(String role) {
+    return userRepository.findByRole(role);
+  }
 
   @Override
   public List<User> getUsers() {
@@ -27,29 +32,22 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User getMentor(UUID menteeId) {
-    User mentee = userRepository.findById(menteeId)
-            .orElseThrow(() -> new UserNotFoundException(String.format("User with id %s not found", menteeId)));
+    Mentorship mentorship = mentorshipRepository.findByMenteeIdAndIsActive(menteeId, true)
+            .orElseThrow(() -> new UserNotFoundException(String.format("Mentee with id %s has no active mentor", menteeId)));
 
-    MentorMenteeLink link = mentee.getMentorLinks().stream()
-            .filter(MentorMenteeLink::getIsActive)
-            .findFirst()
-            .orElseThrow(() -> new UserNotFoundException(String.format("Mentee with id %s has no mentor", menteeId)));
-
-    return link.getMentor();
+    return mentorship.getMentor();
   }
 
   @Override
   public List<User> getMentees(UUID mentorId) {
-    User mentor = userRepository.findById(mentorId)
+    userRepository.findById(mentorId)
             .orElseThrow(() -> new UserNotFoundException(String.format("User with id %s not found", mentorId)));
 
-    List<User> mentees = mentor.getMenteeLinks()
-            .stream()
-            .filter(MentorMenteeLink::getIsActive)
-            .map(MentorMenteeLink::getMentee)
+    List<Mentorship> mentorships = mentorshipRepository.findByMentorIdAndIsActive(mentorId, true);
+    
+    return mentorships.stream()
+            .map(Mentorship::getMentee)
             .toList();
-
-    return mentees;
   }
 
   @Override
@@ -62,33 +60,31 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public MentorMenteeLink addMenteeLink(UUID mentorId, String email) {
+  public Mentorship assignMentorToMentee(UUID mentorId, String menteeEmail) {
     User mentor = userRepository.findById(mentorId)
             .orElseThrow(() -> new UserNotFoundException(String.format("User with id %s not found", mentorId)));
-
-    User mentee = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(String.format("User with email %s not found", email)));
-
-    MentorMenteeLink link = new MentorMenteeLink();
-    link.setMentor(mentor);
-    link.setMentee(mentee);
-    link.setIsActive(true);
-
-    mentor.getMenteeLinks().add(link);
-    mentee.getMentorLinks().add(link);
-    userRepository.save(mentor);
-
-    return link;
+    User mentee = userRepository.findByEmail(menteeEmail)
+            .orElseThrow(() -> new UserNotFoundException(String.format("User with email %s not found", menteeEmail)));
+    
+    // Check if mentee already has an active mentor
+    if (mentorshipRepository.findByMenteeIdAndIsActive(mentee.getId(), true).isPresent()) {
+      throw new UserException("This mentee already has an active mentor");
+    }
+    
+    Mentorship mentorship = new Mentorship();
+    mentorship.setMentor(mentor);
+    mentorship.setMentee(mentee);
+    mentorship.setIsActive(true);
+    
+    return mentorshipRepository.save(mentorship);
   }
 
   @Override
-  public void deleteMenteeLink(UUID mentorId, UUID menteeId) {
-    MentorMenteeLink link = mentorMenteeLinkRepository.findByMentorIdAndMenteeId(mentorId, menteeId)
-            .orElseThrow(() -> new LinkNotFoundException(String.format("Link between user %s and user %s not found", mentorId, menteeId)));
+  public void deleteMentorship(UUID mentorshipId, UUID menteeId) {
+    Mentorship mentorship = mentorshipRepository.findByMentorIdAndMenteeId(mentorshipId, menteeId)
+            .orElseThrow(() -> new MentorshipNotFoundException(String.format("Mentorship between mentor %s and mentee %s not found", mentorshipId, menteeId)));
 
-    link.setIsActive(false);
-    userRepository.save(link.getMentor());
-    userRepository.save(link.getMentee());
-    mentorMenteeLinkRepository.save(link);
+    // Simply delete the mentorship
+    mentorshipRepository.delete(mentorship);
   }
 }

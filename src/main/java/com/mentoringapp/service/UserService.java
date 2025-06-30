@@ -1,6 +1,6 @@
 package com.mentoringapp.service;
 
-import com.mentoringapp.domain.MentorMenteeLink;
+import com.mentoringapp.domain.Mentorship;
 import com.mentoringapp.domain.User;
 
 import java.util.List;
@@ -10,9 +10,10 @@ public interface UserService {
   public List<User> getUsers();
   public User getMentor(UUID menteeId);
   public List<User> getMentees(UUID mentorId);
+  public List<User> getUsersByRole(String role);
 
   public User createUser(User user);
 
-  public MentorMenteeLink addMenteeLink(UUID mentorId, String email);
-  public void deleteMenteeLink(UUID mentorId, UUID menteeId);
+  public Mentorship assignMentorToMentee(UUID mentorId, String menteeEmail);
+  public void deleteMentorship(UUID mentorId, UUID menteeId);
 }

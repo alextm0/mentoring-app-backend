@@ -1,12 +1,18 @@
 package com.mentoringapp.controller;
 
-import com.mentoringapp.domain.MentorMenteeLink;
 import com.mentoringapp.domain.User;
-import com.mentoringapp.dto.request.CreateLinkRequestDTO;
-import com.mentoringapp.dto.response.CreateLinkResponseDTO;
-import com.mentoringapp.dto.response.GetMenteeListResponseDTO;
+import com.mentoringapp.dto.request.CreateUserRequestDTO;
+import com.mentoringapp.dto.response.UserResponseDTO;
+import com.mentoringapp.mapper.UserMapper;
 import com.mentoringapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,34 +20,98 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@Tag(name = "User Management", description = "Operations related to users, mentors, and mentees")
 public class UserController {
-  private final UserService userService;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
-  @GetMapping("/users")
-  public ResponseEntity<List<User>> getUsers() {
-    return ResponseEntity.ok(userService.getUsers());
-  }
+    @Operation(summary = "Get all users", description = "Retrieve a list of all users in the system")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved users")
+    @GetMapping
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<User> users = userService.getUsers();
+        List<UserResponseDTO> userDTOs = userMapper.usersToUserResponseDTOs(users);
+        return ResponseEntity.ok(userDTOs);
+    }
 
-  @PostMapping("/users")
-  public ResponseEntity<User> createUser(@RequestBody User user) {
-    return userService.createUser(user) != null ? ResponseEntity.ok(user) : ResponseEntity.badRequest().build();
-  }
+    @Operation(summary = "Get users by role", description = "Retrieve users filtered by their role (MENTOR or MENTEE)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved users by role"),
+        @ApiResponse(responseCode = "400", description = "Invalid role provided")
+    })
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<UserResponseDTO>> getUsersByRole(
+            @Parameter(description = "Role to filter by (MENTOR or MENTEE)", example = "MENTOR")
+            @PathVariable String role) {
+        List<User> users = userService.getUsersByRole(role.toUpperCase());
+        List<UserResponseDTO> userDTOs = userMapper.usersToUserResponseDTOs(users);
+        return ResponseEntity.ok(userDTOs);
+    }
 
-  @GetMapping("/mentees/{menteeId}/mentor")
-  public ResponseEntity<User> getMentor(@PathVariable UUID menteeId) {
-    return ResponseEntity.ok(userService.getMentor(menteeId));
-  }
+    @Operation(summary = "Get all mentors", description = "Retrieve a list of all mentors")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved mentors")
+    @GetMapping("/mentors")
+    public ResponseEntity<List<UserResponseDTO>> getMentors() {
+        List<User> mentors = userService.getUsersByRole("MENTOR");
+        List<UserResponseDTO> mentorDTOs = userMapper.usersToUserResponseDTOs(mentors);
+        return ResponseEntity.ok(mentorDTOs);
+    }
 
-  @GetMapping("/mentors/{mentorId}/mentees")
-  public ResponseEntity<List<User>> getMentees(@PathVariable UUID mentorId) {
-    return ResponseEntity.ok(userService.getMentees(mentorId));
-  }
+    @Operation(summary = "Get all mentees", description = "Retrieve a list of all mentees")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved mentees")
+    @GetMapping("/mentees")
+    public ResponseEntity<List<UserResponseDTO>> getMentees() {
+        List<User> mentees = userService.getUsersByRole("MENTEE");
+        List<UserResponseDTO> menteeDTOs = userMapper.usersToUserResponseDTOs(mentees);
+        return ResponseEntity.ok(menteeDTOs);
+    }
 
-  @PostMapping("/mentors/{mentorId}/mentor-links")
-  public ResponseEntity<MentorMenteeLink> createLink(@PathVariable UUID mentorId, @RequestBody CreateLinkRequestDTO request) {
-    MentorMenteeLink mentorMenteeLink = userService.addMenteeLink(mentorId, request.getEmail());
-    return ResponseEntity.ok(mentorMenteeLink);
-  }
+    @Operation(summary = "Get mentees for a specific mentor", description = "Retrieve all mentees assigned to a specific mentor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved mentees for the mentor"),
+        @ApiResponse(responseCode = "404", description = "Mentor not found")
+    })
+    @GetMapping("/mentors/{mentorId}/mentees")
+    public ResponseEntity<List<UserResponseDTO>> getMenteesForMentor(
+            @Parameter(description = "ID of the mentor", example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID mentorId) {
+        List<User> mentees = userService.getMentees(mentorId);
+        List<UserResponseDTO> menteeDTOs = userMapper.usersToUserResponseDTOs(mentees);
+        return ResponseEntity.ok(menteeDTOs);
+    }
+
+    @Operation(summary = "Get mentor for a specific mentee", description = "Retrieve the mentor assigned to a specific mentee")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved mentor for the mentee"),
+        @ApiResponse(responseCode = "404", description = "Mentee not found or has no mentor")
+    })
+    @GetMapping("/mentees/{menteeId}/mentor")
+    public ResponseEntity<UserResponseDTO> getMentorForMentee(
+            @Parameter(description = "ID of the mentee", example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID menteeId) {
+        User mentor = userService.getMentor(menteeId);
+        UserResponseDTO mentorDTO = userMapper.userToUserResponseDTO(mentor);
+        return ResponseEntity.ok(mentorDTO);
+    }
+
+    @Operation(summary = "Create a new user", description = "Create a new user (mentor or mentee)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid user data provided"),
+        @ApiResponse(responseCode = "409", description = "User with email already exists")
+    })
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> createUser(
+            @Valid @RequestBody CreateUserRequestDTO requestDTO) {
+        User user = new User();
+        user.setName(requestDTO.getName());
+        user.setEmail(requestDTO.getEmail());
+        user.setRole(requestDTO.getRole().toUpperCase());
+        
+        User createdUser = userService.createUser(user);
+        UserResponseDTO userDTO = userMapper.userToUserResponseDTO(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+    }
 }

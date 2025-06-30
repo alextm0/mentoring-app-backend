@@ -9,7 +9,7 @@ CREATE TABLE users (
     updated_at TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE mentor_mentee_link (
+CREATE TABLE mentorships (
     id UUID PRIMARY KEY,
     mentor_id UUID NOT NULL,
     mentee_id UUID NOT NULL,

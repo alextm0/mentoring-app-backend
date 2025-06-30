@@ -1,6 +1,8 @@
 package com.mentoringapp.controller.advice;
 
 import com.mentoringapp.dto.ErrorDTO;
+import com.mentoringapp.exceptions.LinkNotFoundException;
+import com.mentoringapp.exceptions.UserException;
 import com.mentoringapp.exceptions.UserNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +19,24 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(LinkNotFoundException.class)
+  public ResponseEntity<ErrorDTO> handleLinkNotFoundException(LinkNotFoundException ex) {
+    log.error("Caught LinkNotFoundException", ex);
+    ErrorDTO errorDTO = new ErrorDTO("Mentor Mentee Link not found");
+    return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+  }
+
   @ExceptionHandler(UserNotFoundException.class)
   public ResponseEntity<ErrorDTO> handleUserNotFoundException(UserNotFoundException ex) {
-    log.error("Caught exception", ex);
+    log.error("Caught UserNotFoundException", ex);
     ErrorDTO errorDTO = new ErrorDTO("User not found");
+    return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(UserException.class)
+  public ResponseEntity<ErrorDTO> handleUserException(UserException ex) {
+    log.error("Caught UserException", ex);
+    ErrorDTO errorDTO = new ErrorDTO("An unknown user error occurred");
     return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
   }
 
@@ -55,5 +71,13 @@ public class GlobalExceptionHandler {
             .orElse("Validation error occurred");
 
     return new ResponseEntity<>(new ErrorDTO(errorMessage), HttpStatus.BAD_REQUEST);
+  }
+
+  // IllegalStateException
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ErrorDTO> handleIllegalStateException(IllegalStateException ex) {
+    log.error("IllegalStateException", ex);
+    ErrorDTO errorDTO = new ErrorDTO("An unknown error occurred");
+    return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

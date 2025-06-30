@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Assignment {
   @Id
   @Column(name = "id", nullable = false, updatable = false)
@@ -35,7 +37,7 @@ public class Assignment {
 
   @Column(name = "status", nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
-  private AssignmentStatus status;
+  private AssignmentStatus status = AssignmentStatus.PENDING;
 
   @Column(name = "xp_reward", nullable = false)
   private Integer xpReward = 0;
@@ -47,6 +49,9 @@ public class Assignment {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "mentee_id", nullable = false)
   private User mentee;
+
+  @OneToMany(mappedBy = "assignment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AssignmentProblemLink> problemLinks = new ArrayList<>();
 
   @OneToMany(mappedBy = "assignment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Submission> submissions = new ArrayList<>();

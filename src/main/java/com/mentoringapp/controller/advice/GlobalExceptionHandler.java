@@ -19,10 +19,24 @@ import java.util.stream.Collectors;
 @Hidden // Hide from Swagger documentation
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<ApiErrorDTO> handleUserNotFoundException(UserNotFoundException ex) {
-    log.error("User not found: {}", ex.getMessage());
-    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "User Not Found", HttpStatus.NOT_FOUND.value());
+  @ExceptionHandler(AssignmentNotFoundException.class)
+  public ResponseEntity<ApiErrorDTO> handleAssignmentNotFoundException(AssignmentNotFoundException ex) {
+    log.error("Caught AssignmentNotFoundException: {}", ex.getMessage());
+    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "Assignment not found", HttpStatus.NOT_FOUND.value());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(AssignmentException.class)
+  public ResponseEntity<ApiErrorDTO> handleAssignmentException(AssignmentException ex) {
+    log.error("Caught AssignmentException: {}", ex.getMessage());
+    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "Assignment Error", HttpStatus.BAD_REQUEST.value());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(MentorshipException.class)
+  public ResponseEntity<ApiErrorDTO> handleMentorshipException(MentorshipException ex) {
+    log.error("Caught MentorshipException: {}", ex.getMessage());
+    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "Mentorship Error", HttpStatus.INTERNAL_SERVER_ERROR.value());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
@@ -52,6 +66,13 @@ public class GlobalExceptionHandler {
     log.error("Mentorship permission denied: {}", ex.getMessage());
     ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "Permission Denied", HttpStatus.FORBIDDEN.value());
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+  }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ApiErrorDTO> handleUserNotFoundException(UserNotFoundException ex) {
+    log.error("User not found: {}", ex.getMessage());
+    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "User Not Found", HttpStatus.NOT_FOUND.value());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
   @ExceptionHandler(UserException.class)
@@ -84,6 +105,13 @@ public class GlobalExceptionHandler {
     log.error("Constraint violation: {}", errorMessage);
     ApiErrorDTO error = new ApiErrorDTO(errorMessage, "Constraint Violation", HttpStatus.BAD_REQUEST.value());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+  public ResponseEntity<ApiErrorDTO> handleNoResourceFoundException(org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+    log.warn("Static resource not found: {}", ex.getResourcePath());
+    ApiErrorDTO error = new ApiErrorDTO(ex.getMessage(), "Resource Not Found", HttpStatus.NOT_FOUND.value());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
   @ExceptionHandler(Exception.class)

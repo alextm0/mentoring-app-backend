@@ -1,6 +1,6 @@
 package com.mentoringapp.exceptions;
 
-public class MentorshipAlreadyExistsException extends UserException {
+public class MentorshipAlreadyExistsException extends MentorshipException {
   public MentorshipAlreadyExistsException(String message) {
     super(message);
   }

@@ -9,6 +9,15 @@ services:
       POSTGRES_PASSWORD: changemeinprod!
     volumes:
       - pgdata:/var/lib/postgresql/data
+  backend:
+    build: .
+    environment:
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+    ports:
+      - "8080:8080"
 
 volumes:
   pgdata:

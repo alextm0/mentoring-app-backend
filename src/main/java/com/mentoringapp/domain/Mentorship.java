@@ -38,9 +38,6 @@ public class Mentorship {
   @JoinColumn(name = "mentee_id", nullable = false, unique = true)
   private User mentee;
 
-  @Column(name = "is_active", nullable = false)
-  private Boolean isActive = true;
-
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;

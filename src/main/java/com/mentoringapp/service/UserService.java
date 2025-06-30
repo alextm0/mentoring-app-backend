@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-  public List<User> getUsers();
-  public User getMentor(UUID menteeId);
-  public List<User> getMentees(UUID mentorId);
-  public List<User> getUsersByRole(String role);
+  List<User> getUsers();
+  User getMentor(UUID menteeId);
+  List<User> getMentees(UUID mentorId);
+  List<User> getUsersByRole(String role);
 
-  public User createUser(User user);
-
-  public Mentorship assignMentorToMentee(UUID mentorId, String menteeEmail);
-  public void deleteMentorship(UUID mentorId, UUID menteeId);
+  User createUser(User user);
 }

@@ -2,18 +2,15 @@ package com.mentoringapp.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserRequestDTO {
-    private UUID id;
-    
     @NotBlank(message = "Name must not be blank")
     private String name;
 
@@ -22,5 +19,6 @@ public class CreateUserRequestDTO {
     private String email;
 
     @NotBlank(message = "Role must not be blank")
+    @Pattern(regexp = "^(MENTOR|MENTEE)$", message = "Role must be either MENTOR or MENTEE")
     private String role;
 } 

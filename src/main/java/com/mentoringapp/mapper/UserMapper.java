@@ -1,13 +1,18 @@
 package com.mentoringapp.mapper;
 
 import com.mentoringapp.domain.User;
-import com.mentoringapp.dto.response.UserResponseDTO;
+import com.mentoringapp.dto.response.CreateUserResponseDTO;
+import com.mentoringapp.dto.response.GetUserResponseDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserResponseDTO userToUserResponseDTO(User user);
-    List<UserResponseDTO> usersToUserResponseDTOs(List<User> users);
+    // For user creation
+    CreateUserResponseDTO userToCreateUserResponseDTO(User user);
+    
+    // For user retrieval
+    GetUserResponseDTO userToGetUserResponseDTO(User user);
+    List<GetUserResponseDTO> usersToGetUserResponseDTOs(List<User> users);
 }

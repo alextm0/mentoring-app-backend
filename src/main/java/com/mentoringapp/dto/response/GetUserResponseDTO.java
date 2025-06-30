@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MentorshipResponseDTO {
+public class GetUserResponseDTO {
     private UUID id;
-    private UserResponseDTO mentor;
-    private UserResponseDTO mentee;
-    private Boolean isActive;
-    private LocalDateTime createdAt;
+    private String name;
+    private String email;
+    private String role;
+    private Integer totalXp;
+    private Integer currentLevel;
 } 

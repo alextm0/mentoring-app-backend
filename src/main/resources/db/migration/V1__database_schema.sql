@@ -14,7 +14,6 @@ CREATE TABLE mentorships (
     mentor_id UUID NOT NULL,
     mentee_id UUID NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
     CONSTRAINT fk_mentor FOREIGN KEY (mentor_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_mentee FOREIGN KEY (mentee_id) REFERENCES users(id) ON DELETE CASCADE,

@@ -2,7 +2,8 @@ package com.mentoringapp.controller;
 
 import com.mentoringapp.domain.User;
 import com.mentoringapp.dto.request.CreateUserRequestDTO;
-import com.mentoringapp.dto.response.UserResponseDTO;
+import com.mentoringapp.dto.response.CreateUserResponseDTO;
+import com.mentoringapp.dto.response.GetUserResponseDTO;
 import com.mentoringapp.mapper.UserMapper;
 import com.mentoringapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,9 +31,9 @@ public class UserController {
     @Operation(summary = "Get all users", description = "Retrieve a list of all users in the system")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved users")
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseEntity<List<GetUserResponseDTO>> getAllUsers() {
         List<User> users = userService.getUsers();
-        List<UserResponseDTO> userDTOs = userMapper.usersToUserResponseDTOs(users);
+        List<GetUserResponseDTO> userDTOs = userMapper.usersToGetUserResponseDTOs(users);
         return ResponseEntity.ok(userDTOs);
     }
 
@@ -42,29 +43,29 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid role provided")
     })
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<UserResponseDTO>> getUsersByRole(
+    public ResponseEntity<List<GetUserResponseDTO>> getUsersByRole(
             @Parameter(description = "Role to filter by (MENTOR or MENTEE)", example = "MENTOR")
             @PathVariable String role) {
         List<User> users = userService.getUsersByRole(role.toUpperCase());
-        List<UserResponseDTO> userDTOs = userMapper.usersToUserResponseDTOs(users);
+        List<GetUserResponseDTO> userDTOs = userMapper.usersToGetUserResponseDTOs(users);
         return ResponseEntity.ok(userDTOs);
     }
 
     @Operation(summary = "Get all mentors", description = "Retrieve a list of all mentors")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved mentors")
     @GetMapping("/mentors")
-    public ResponseEntity<List<UserResponseDTO>> getMentors() {
+    public ResponseEntity<List<GetUserResponseDTO>> getMentors() {
         List<User> mentors = userService.getUsersByRole("MENTOR");
-        List<UserResponseDTO> mentorDTOs = userMapper.usersToUserResponseDTOs(mentors);
+        List<GetUserResponseDTO> mentorDTOs = userMapper.usersToGetUserResponseDTOs(mentors);
         return ResponseEntity.ok(mentorDTOs);
     }
 
     @Operation(summary = "Get all mentees", description = "Retrieve a list of all mentees")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved mentees")
     @GetMapping("/mentees")
-    public ResponseEntity<List<UserResponseDTO>> getMentees() {
+    public ResponseEntity<List<GetUserResponseDTO>> getMentees() {
         List<User> mentees = userService.getUsersByRole("MENTEE");
-        List<UserResponseDTO> menteeDTOs = userMapper.usersToUserResponseDTOs(mentees);
+        List<GetUserResponseDTO> menteeDTOs = userMapper.usersToGetUserResponseDTOs(mentees);
         return ResponseEntity.ok(menteeDTOs);
     }
 
@@ -74,11 +75,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "Mentor not found")
     })
     @GetMapping("/mentors/{mentorId}/mentees")
-    public ResponseEntity<List<UserResponseDTO>> getMenteesForMentor(
-            @Parameter(description = "ID of the mentor", example = "123e4567-e89b-12d3-a456-426614174000")
+    public ResponseEntity<List<GetUserResponseDTO>> getMenteesForMentor(
+            @Parameter(description = "ID of the mentor")
             @PathVariable UUID mentorId) {
         List<User> mentees = userService.getMentees(mentorId);
-        List<UserResponseDTO> menteeDTOs = userMapper.usersToUserResponseDTOs(mentees);
+        List<GetUserResponseDTO> menteeDTOs = userMapper.usersToGetUserResponseDTOs(mentees);
         return ResponseEntity.ok(menteeDTOs);
     }
 
@@ -88,11 +89,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "Mentee not found or has no mentor")
     })
     @GetMapping("/mentees/{menteeId}/mentor")
-    public ResponseEntity<UserResponseDTO> getMentorForMentee(
-            @Parameter(description = "ID of the mentee", example = "123e4567-e89b-12d3-a456-426614174000")
+    public ResponseEntity<GetUserResponseDTO> getMentorForMentee(
+            @Parameter(description = "ID of the mentee")
             @PathVariable UUID menteeId) {
         User mentor = userService.getMentor(menteeId);
-        UserResponseDTO mentorDTO = userMapper.userToUserResponseDTO(mentor);
+        GetUserResponseDTO mentorDTO = userMapper.userToGetUserResponseDTO(mentor);
         return ResponseEntity.ok(mentorDTO);
     }
 
@@ -103,7 +104,7 @@ public class UserController {
         @ApiResponse(responseCode = "409", description = "User with email already exists")
     })
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(
+    public ResponseEntity<CreateUserResponseDTO> createUser(
             @Valid @RequestBody CreateUserRequestDTO requestDTO) {
         User user = new User();
         user.setName(requestDTO.getName());
@@ -111,7 +112,7 @@ public class UserController {
         user.setRole(requestDTO.getRole().toUpperCase());
         
         User createdUser = userService.createUser(user);
-        UserResponseDTO userDTO = userMapper.userToUserResponseDTO(createdUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+        CreateUserResponseDTO responseDTO = userMapper.userToCreateUserResponseDTO(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 }

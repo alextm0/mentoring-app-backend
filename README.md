@@ -99,8 +99,8 @@ src/main/java/com/mentoringapp/
 2. Create a feature branch
 3. Make your changes
 4. Add tests if applicable
-5. Submit a 
-pull request
+5. Submit a pull request
+
 ## License
 
 This project is licensed under the MIT License.

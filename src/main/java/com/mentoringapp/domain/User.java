@@ -33,24 +33,20 @@ public class User {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @NotBlank(message = "Name cannot be blank")
   @Column(name = "name", nullable = false, length = 100)
   private String name;
 
-  @NotBlank(message = "Email cannot be blank")
-  @Email(message = "Email must be valid")
   @Column(name = "email", nullable = false, updatable = false, unique = true, length = 100)
   private String email;
 
-  @NotBlank(message = "Role cannot be blank")
   @Column(name = "role", nullable = false, updatable = false, length = 20)
-  private String role;
+  @Enumerated(EnumType.STRING)
+  private UserRole role;
 
   @NotNull(message = "Total XP cannot be null")
   @Column(name = "total_xp", nullable = false)
   private Integer totalXp = 0;
 
-  @NotNull(message = "Current level cannot be null")
   @Column(name = "current_level", nullable = false)
   private Integer currentLevel = 1;
 

@@ -2,6 +2,7 @@ package com.mentoringapp.service.impl;
 
 import com.mentoringapp.domain.Mentorship;
 import com.mentoringapp.domain.User;
+import com.mentoringapp.domain.UserRole;
 import com.mentoringapp.exceptions.UserException;
 import com.mentoringapp.exceptions.UserNotFoundException;
 import com.mentoringapp.repository.MentorshipRepository;
@@ -42,12 +43,12 @@ class UserServiceImplTest {
         mentor = new User();
         mentor.setId(UUID.randomUUID());
         mentor.setEmail("mentor@example.com");
-        mentor.setRole("MENTOR");
+        mentor.setRole(UserRole.MENTOR);
 
         mentee = new User();
         mentee.setId(UUID.randomUUID());
         mentee.setEmail("mentee@example.com");
-        mentee.setRole("MENTEE");
+        mentee.setRole(UserRole.MENTEE);
 
         mentorship = new Mentorship();
         mentorship.setId(UUID.randomUUID());

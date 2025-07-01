@@ -36,11 +36,11 @@ public class MentorshipServiceImpl implements MentorshipService {
       throw new InvalidMentorshipException("Mentor and mentee cannot be the same");
     }
 
-    if (!"MENTOR".equalsIgnoreCase(mentor.getRole())) {
+    if (!"MENTOR".equalsIgnoreCase(mentor.getRole().name())) {
       throw new InvalidMentorshipException("User " + mentor.getEmail() + " is not a mentor.");
     }
 
-    if (!"MENTEE".equalsIgnoreCase(mentee.getRole())) {
+    if (!"MENTEE".equalsIgnoreCase(mentee.getRole().name())) {
       throw new InvalidMentorshipException("User " + mentee.getEmail() + " is not a mentee.");
     }
 

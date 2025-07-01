@@ -1,8 +1,9 @@
 package com.mentoringapp.dto.request;
 
+import com.mentoringapp.domain.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,6 @@ public class CreateUserRequestDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Role must not be blank")
-    @Pattern(regexp = "^(MENTOR|MENTEE)$", message = "Role must be either MENTOR or MENTEE")
-    private String role;
+    @NotNull(message = "Role must be provided and be either MENTOR or MENTEE")
+    private UserRole role;
 } 

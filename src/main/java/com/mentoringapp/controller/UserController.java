@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import com.mentoringapp.domain.UserRole;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -45,8 +47,8 @@ public class UserController {
     @GetMapping("/role/{role}")
     public ResponseEntity<List<GetUserResponseDTO>> getUsersByRole(
             @Parameter(description = "Role to filter by (MENTOR or MENTEE)", example = "MENTOR")
-            @PathVariable String role) {
-        List<User> users = userService.getUsersByRole(role.toUpperCase());
+            @PathVariable UserRole role) {
+        List<User> users = userService.getUsersByRole(role);
         List<GetUserResponseDTO> userDTOs = userMapper.usersToGetUserResponseDTOs(users);
         return ResponseEntity.ok(userDTOs);
     }
@@ -55,7 +57,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved mentors")
     @GetMapping("/mentors")
     public ResponseEntity<List<GetUserResponseDTO>> getMentors() {
-        List<User> mentors = userService.getUsersByRole("MENTOR");
+        List<User> mentors = userService.getUsersByRole(UserRole.MENTOR);
         List<GetUserResponseDTO> mentorDTOs = userMapper.usersToGetUserResponseDTOs(mentors);
         return ResponseEntity.ok(mentorDTOs);
     }
@@ -64,7 +66,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved mentees")
     @GetMapping("/mentees")
     public ResponseEntity<List<GetUserResponseDTO>> getMentees() {
-        List<User> mentees = userService.getUsersByRole("MENTEE");
+        List<User> mentees = userService.getUsersByRole(UserRole.MENTEE);
         List<GetUserResponseDTO> menteeDTOs = userMapper.usersToGetUserResponseDTOs(mentees);
         return ResponseEntity.ok(menteeDTOs);
     }
@@ -109,7 +111,7 @@ public class UserController {
         User user = new User();
         user.setName(requestDTO.getName());
         user.setEmail(requestDTO.getEmail());
-        user.setRole(requestDTO.getRole().toUpperCase());
+        user.setRole(requestDTO.getRole());
         
         User createdUser = userService.createUser(user);
         CreateUserResponseDTO responseDTO = userMapper.userToCreateUserResponseDTO(createdUser);

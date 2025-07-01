@@ -2,6 +2,7 @@ package com.mentoringapp.service.impl;
 
 import com.mentoringapp.domain.Mentorship;
 import com.mentoringapp.domain.User;
+import com.mentoringapp.domain.UserRole;
 import com.mentoringapp.exceptions.MentorshipNotFoundException;
 import com.mentoringapp.exceptions.UserException;
 import com.mentoringapp.exceptions.UserNotFoundException;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
   private final MentorshipRepository mentorshipRepository;
 
   @Override
-  public List<User> getUsersByRole(String role) {
+  public List<User> getUsersByRole(UserRole role) {
     return userRepository.findByRole(role);
   }
 

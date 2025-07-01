@@ -2,6 +2,7 @@ package com.mentoringapp.service.impl;
 
 import com.mentoringapp.domain.Mentorship;
 import com.mentoringapp.domain.User;
+import com.mentoringapp.domain.UserRole;
 import com.mentoringapp.exceptions.InvalidMentorshipException;
 import com.mentoringapp.exceptions.MentorshipAlreadyExistsException;
 import com.mentoringapp.exceptions.UserNotFoundException;
@@ -41,12 +42,12 @@ class MentorshipServiceImplTest {
         mentor = new User();
         mentor.setId(UUID.randomUUID());
         mentor.setEmail("mentor@example.com");
-        mentor.setRole("MENTOR");
+        mentor.setRole(UserRole.MENTOR);
 
         mentee = new User();
         mentee.setId(UUID.randomUUID());
         mentee.setEmail("mentee@example.com");
-        mentee.setRole("MENTEE");
+        mentee.setRole(UserRole.MENTEE);
     }
 
     @Test
@@ -91,7 +92,7 @@ class MentorshipServiceImplTest {
     @Test
     void assignMentorToMentee_shouldThrow_whenRolesAreIncorrect() {
         // GIVEN
-        mentor.setRole("MENTEE"); // Wrong role
+        mentor.setRole(UserRole.MENTEE); // Wrong role
         when(userRepository.findById(mentor.getId())).thenReturn(Optional.of(mentor));
         when(userRepository.findByEmail(mentee.getEmail())).thenReturn(Optional.of(mentee));
 
